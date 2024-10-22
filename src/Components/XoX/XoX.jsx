@@ -9,7 +9,7 @@ export const XoX = () => {
     <div className="board">
 
     </div>
-    <button className="reset"><Reset></Reset></button>
+    <button className="reset">Reset</button>
 
     </div>
   )
