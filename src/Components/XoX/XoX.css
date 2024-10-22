@@ -1,0 +1,35 @@
+.container{
+    text-align: center;
+}
+
+.tittle{
+     margin-top: 50px;
+     color:rgb(250, 66, 158);
+     font-size: 60px;
+     display:flex;
+     justify-content:center;
+     align-items: center;
+
+}
+.tittle span{
+    color:rgb(237, 88, 230);
+    padding-left: 15px;
+
+
+}
+.reset
+{
+    width: 250px;
+    height: 100px;
+    border:none;
+    outline:none;
+    cursor:pointer;
+    border-radius:50px;
+    background: #a10895;
+    font-size:26px;
+    color:rgb(138, 18, 250);
+    margin: top 25px;
+    margin-bottom: 50px;
+    
+
+}
