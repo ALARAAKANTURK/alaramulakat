@@ -6,7 +6,10 @@ export const XoX = () => {
   return (
     <div className='container' >
     <h1 className="tittle">XoX Game In <span>React</span></h1>
+    <div className="board">
 
+    </div>
+    <button className="reset"><Reset></Reset></button>
 
     </div>
   )
