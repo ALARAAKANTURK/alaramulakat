@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import './XoX.css'
-import circle_icon from '../Assets/o.png'
-import cross_icon from '../Assets/x.png'
-let data =["","","","","","","","",""]
+import circle_icon from '../Assets/circle.png'
+import cross_icon from '../Assets/cross.png'
+
+let data =["","","","","","","","",""];
 
 
 export const XoX = () => {
@@ -17,18 +18,26 @@ export const XoX = () => {
       }
       if(count%2==0)
           {
-            e.target.innerHTML= `<img src>='${cross_icon}'>;`
+            
+            e.target.innerHTML= `<img src='${cross_icon}' alt='cross'>`;
+
             data[num]="x";
             setCount(++count);
 
           }
           else
           {
-            e.target.innerHTML= `<img src>='${circle_icon}'>;`
+            e.target.innerHTML= `<img src='${circle_icon}' alt='circle'>`;
             data[num]="o";
             setCount(++count);
           }
 
+   } 
+   const checkwin = () => {
+    if(data[0]==data[1]&&data[1]==data[2]&&data[2]!=="")
+    {
+        
+    }
    }
 
 
