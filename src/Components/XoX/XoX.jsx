@@ -1,137 +1,153 @@
-import React, { useState } from 'react'
-import { useRef } from 'react';
-import './XoX.css'
-import circle_icon from '../Assets/circle.png'
-import cross_icon from '../Assets/cross.png'
-import { setSelectionRange } from '@testing-library/user-event/dist/utils';
-
-let data =["","","","","","","","",""];
-
+import React, { useState, useRef } from 'react';
+import './XoX.css';
+import circle_icon from '../Assets/circle.png';
+import cross_icon from '../Assets/cross.png';
 
 export const XoX = () => {
-    let[count,setCount] = useState(0);
-    let[lock,setLock]=useState(false);
-    let titleRef = useRef(null);
-    let box1=useRef(null);
-    let box2=useRef(null);
-    let box3=useRef(null);
-    let box4=useRef(null);
-    let box5=useRef(null);
-    let box6=useRef(null);
-    let box7=useRef(null);
-    let box8=useRef(null);
-    let box9=useRef(null);
-    let box_array=[box1,box2,box3,box4,box5,box6,box7,box8,box9];
+  const [boardSize, setBoardSize] = useState(3); // Default size
+  const [data, setData] = useState(Array(9).fill('')); // Initialize board data
+  const [count, setCount] = useState(0);
+  const [lock, setLock] = useState(false);
+  const [scores, setScores] = useState({ x: 0, o: 0 }); // Initialize scores
+  const titleRef = useRef(null);
 
-   const toggle = (e,num) => {
-      if(lock)
-      {
-        return 0;
+  const generateBoard = () => {
+    return Array.from({ length: boardSize }, (_, rowIndex) => (
+      <div className="row" key={rowIndex}>
+        {Array.from({ length: boardSize }, (_, colIndex) => {
+          const index = rowIndex * boardSize + colIndex;
+          return (
+            <div
+              className="boxes"
+              key={index}
+              onClick={(e) => toggle(e, index)}
+            ></div>
+          );
+        })}
+      </div>
+    ));
+  };
 
+  const toggle = (e, num) => {
+    if (lock || data[num]) return; // Prevent action if game is locked or box is already filled
+
+    const newData = [...data];
+    const playerSymbol = count % 2 === 0 ? 'x' : 'o';
+    const playerIcon = playerSymbol === 'x' ? cross_icon : circle_icon;
+
+    e.target.innerHTML = `<img src='${playerIcon}' alt='${playerSymbol}'>`;
+    newData[num] = playerSymbol;
+    setData(newData);
+    setCount(count + 1);
+
+    // Check for a draw
+    if (newData.every(cell => cell !== '')) {
+      setLock(true);
+      calculateScores(newData); // Calculate scores before declaring a draw
+      titleRef.current.innerHTML = 'It\'s a Draw!';
+    }
+  };
+
+  const calculateScores = (data) => {
+    let pointsX = 0;
+    let pointsO = 0;
+
+    // Check rows, columns, and diagonals for scoring
+    for (let i = 0; i < boardSize; i++) {
+      // Check Rows
+      pointsX += checkLineScore(data.slice(i * boardSize, (i + 1) * boardSize), 'x');
+      pointsO += checkLineScore(data.slice(i * boardSize, (i + 1) * boardSize), 'o');
+      
+      // Check Columns
+      const column = data.filter((_, index) => index % boardSize === i);
+      pointsX += checkLineScore(column, 'x');
+      pointsO += checkLineScore(column, 'o');
+    }
+
+    // Check Diagonal
+    const mainDiagonal = data.filter((_, index) => index % (boardSize + 1) === 0);
+    pointsX += checkLineScore(mainDiagonal, 'x');
+    pointsO += checkLineScore(mainDiagonal, 'o');
+
+    // Check Anti-Diagonal
+    const antiDiagonal = data.filter((_, index) => index % (boardSize - 1) === 0 && index > 0 && index < (boardSize * boardSize - 1));
+    pointsX += checkLineScore(antiDiagonal, 'x');
+    pointsO += checkLineScore(antiDiagonal, 'o');
+
+    // Update scores
+    setScores(prevScores => ({
+      x: prevScores.x + pointsX,
+      o: prevScores.o + pointsO
+    }));
+
+    // Display final scores
+    titleRef.current.innerHTML = `Game Over! Final Scores - X: ${pointsX}, O: ${pointsO}`;
+  };
+
+  const checkLineScore = (line, player) => {
+    let count = 0;
+    let totalPoints = 0;
+
+    for (const cell of line) {
+      if (cell === player) {
+        count++;
+      } else {
+        if (count > 0) {
+          totalPoints += count * count; // Square of the count
+        }
+        count = 0; // Reset count
       }
-      if(count%2==0)
-          {
-            
-            e.target.innerHTML= `<img src='${cross_icon}' alt='cross'>`;
-
-            data[num]="x";
-            setCount(++count);
-
-          }
-          else
-          {
-            e.target.innerHTML= `<img src='${circle_icon}' alt='circle'>`;
-            data[num]="o";
-            setCount(++count);
-          }
-          checkwin();
-
-   } 
-   const checkwin = () => {
-    if(data[0]==data[1]&&data[1]==data[2]&&data[2]!=="")
-    {
-        won(data[2]);
-          
-    }
-    else if(data[3]==data[4]&&data[4]==data[5]&&data[5]!=="")
-    {
-        won(data[5]);
-    }
-    else if(data[6]==data[7]&&data[7]==data[8]&&data[8]!=="")
-    {
-        won(data[8]);
-    }
-    else if(data[0]==data[3]&&data[3]==data[6]&&data[6]!=="")
-    {
-        won(data[6]);
-    }
-    else if(data[1]==data[4]&&data[4]==data[7]&&data[7]!=="")
-    {
-        won(data[7]);
-    }
-    else if(data[2]==data[5]&&data[5]==data[8]&&data[8]!=="")
-    {
-        won(data[8]);
-    }
-    else if(data[0]==data[4]&&data[4]==data[8]&&data[8]!=="")
-    {
-        won(data[8]);
-    }
-    else if(data[0]==data[1]&&data[1]==data[2]&&data[2]!=="")
-    {
-        won(data[2]);
-    }
-    else if(data[2]==data[4]&&data[4]==data[6]&&data[6]!=="")
-    {
-        won(data[6]);
-    }
-   }
-   const won = (winner) =>{
-    setLock(true);
-    if(winner="x")
-    {
-        titleRef.current.innerHTML=`Congralutions: <img src='${cross_icon}' alt='cross'>`;
-
-    }
-    else
-    {
-        
-        titleRef.current.innerHTML=`Congralutions: <img src='${circle_icon}' alt='circle'>`;
     }
 
-   }
-   const reset =()=>{
+    // Check for a remaining count at the end of the line
+    if (count > 0) {
+      totalPoints += count * count;
+    }
+
+    return totalPoints;
+  };
+
+  const reset = () => {
     setLock(false);
-    data =["","","","","","","","",""];
-    titleRef.current.innnerHTML='XOX In<span>React</span>';
-    box_array.map((e)=>{
-        e.current.innerHTML="";
-    })
-}
-
+    setData(Array(boardSize * boardSize).fill(''));
+    setScores({ x: 0, o: 0 }); // Reset scores
+    titleRef.current.innerHTML = 'XoX Game In <span>React</span>';
+    document.querySelectorAll('.boxes').forEach(box => {
+      box.innerHTML = '';
+    });
+    setCount(0); // Reset turn counter
+  };
 
   return (
-    <div className='container' >
-    <h1 className="title"ref={titleRef}>XoX Game In <span>React</span></h1>
-    <div className="board">
-        <div className="row1">
-            <div className="boxes" ref ={box1} onClick={(e)=>{toggle(e,0)}}></div>
-            <div className="boxes" ref ={box2} onClick={(e)=>{toggle(e,1)}}></div>
-            <div className="boxes" ref ={box3} onClick={(e)=>{toggle(e,2)}}></div>
-        </div>
-        <div className="row2">
-            <div className="boxes" ref ={box4} onClick={(e)=>{toggle(e,3)}}></div>
-            <div className="boxes"ref ={box5} onClick={(e)=>{toggle(e,4)}}></div>
-            <div className="boxes"ref ={box6} onClick={(e)=>{toggle(e,5)}}></div>
-        </div>
-        <div className="row3">
-            <div className="boxes" ref ={box7} onClick={(e)=>{toggle(e,6)}}></div>
-            <div className="boxes" ref ={box8} onClick={(e)=>{toggle(e,7)}}></div>
-            <div className="boxes"ref ={box9} onClick={(e)=>{toggle(e,8)}}></div>
-        </div>
-    </div>
-    <button className="reset" onClick={()=>{reset()}}>Reset</button>
+    <div className='container'>
+      <h1 className="title" ref={titleRef}>XoX Game In <span>React</span></h1>
+      
+      <div>
+        <label>Enter board size (3, 4, 5, ...): </label>
+        <input
+          type="number"
+          min="3"
+          max="10"
+          value={boardSize}
+          onChange={(e) => {
+            const newSize = Number(e.target.value);
+            setBoardSize(newSize);
+            reset(); // Reset the game when board size changes
+          }}
+        />
+      </div>
 
+      <div className="board">
+        {generateBoard()}
+      </div>
+
+      <div className="scores">
+        <h2>Scores</h2>
+        <p>X: {scores.x}</p>
+        <p>O: {scores.o}</p>
+      </div>
+      
+      <button className="reset" onClick={reset}>Reset</button>
     </div>
-  )
+  );
 }
