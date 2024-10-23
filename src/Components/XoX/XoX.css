@@ -14,8 +14,6 @@
 .tittle span{
     color:rgb(237, 88, 230);
     padding-left: 15px;
-
-
 }
 .reset
 {
@@ -30,8 +28,21 @@
     color:rgb(138, 18, 250);
     margin: top 25px;
     margin-bottom: 50px;
+}
 
-
+.start
+{
+    width: 250px;
+    height: 100px;
+    border:none;
+    outline:none;
+    cursor:pointer;
+    border-radius:50px;
+    background: #08a115;
+    font-size:26px;
+    color:rgb(45, 250, 18);
+    margin: top 25px;
+    margin-bottom: 50px;
 }
 .boxes
 {
@@ -42,11 +53,12 @@
     border:4px solid #0f1b21;
     border-radius: 12px;
     cursor:pointer;
+    margin-right: 30px;
 }
 .board
 {
     height:600px;
-    width:546px;
+    width:600px;
     display:flex;
     margin:auto;
 
