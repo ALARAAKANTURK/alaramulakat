@@ -346,8 +346,7 @@ export const XoX = () => {
       ):
       (
         <div>
-          
-
+            
           <div className="row">
             <div className="col-2 container">
               <div className="scores">
