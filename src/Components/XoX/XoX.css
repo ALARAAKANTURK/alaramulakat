@@ -72,3 +72,12 @@
     height:50px;
 
 }
+.list-group-item {
+    background-color: rgb(234, 222, 247);
+    transition: background-color 0.3s ease;
+  }
+  
+  .list-group-item:hover {
+    background-color: lightblue;
+  }
+  
