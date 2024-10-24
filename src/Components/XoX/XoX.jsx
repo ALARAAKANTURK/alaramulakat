@@ -9,8 +9,8 @@ export const XoX = () => {
   const [player1Symbol, setPlayer1Symbol] = useState('x');
   const [player2Symbol, setPlayer2Symbol] = useState('o');
   const [isGameStarted, setIsGameStarted] = useState(false);
-  const [boardSize, setBoardSize] = useState(3); // Default size
-  const [data, setData] = useState(Array(9).fill('')); // Initialize board data
+  const [boardSize, setBoardSize] = useState(3); 
+  const [data, setData] = useState(Array(9).fill('')); 
   const [count, setCount] = useState(0);
   const [lock, setLock] = useState(false);
   const [scores, setScores] = useState({ x: 0, o: 0 });
@@ -23,7 +23,7 @@ export const XoX = () => {
       return;
     }
     setIsGameStarted(true);
-    reset(); // Reset game when starting new
+    reset(); 
   };
 
   const generateBoard = () => {
@@ -75,9 +75,8 @@ export const XoX = () => {
     let lastpointsX = 0;
     let lastpointsO = 0;
   
-    // Check rows and columns for scoring
     for (let i = 0; i < boardSize; i++) {
-      // Check Rows
+     
       lastpointsX = checkLineScore(data.slice(i * boardSize, (i + 1) * boardSize), 'x');
       lastpointsO = checkLineScore(data.slice(i * boardSize, (i + 1) * boardSize), 'o');
       if(lastpointsX> pointsX){
@@ -86,7 +85,7 @@ export const XoX = () => {
       if(lastpointsO> pointsO){
         pointsO = lastpointsO;
       }
-      // Check Columns
+     
       const column = data.filter((_, index) => index % boardSize === i);
       lastpointsX = checkLineScore(column, 'x');
       lastpointsO = checkLineScore(column, 'o');
@@ -99,7 +98,6 @@ export const XoX = () => {
       }
     }
   
-    // Check all diagonals
     lastpointsX = checkAllDiagonals(data, 'x');
     lastpointsO = checkAllDiagonals(data, 'o');
   
@@ -110,7 +108,6 @@ export const XoX = () => {
       pointsO = lastpointsO;
     }
 
-    // Update scores
     const finalScores = { x: pointsX, o: pointsO };
     setScores(prevScores => ({
       x: pointsX,
@@ -119,7 +116,7 @@ export const XoX = () => {
   
   };
   
-  // Function to calculate points from all possible diagonals
+ 
   const checkAllDiagonals = (data, player) => {
     let totalPoints = 0;
     let lastPoints = 0;
@@ -194,7 +191,7 @@ export const XoX = () => {
     return totalPoints;
   };
   
-  // Check line score for a player, and calculate points based on consecutive symbols
+ 
   const checkLineScore = (line, player) => {
     let count = 0;
     let totalPoints = 0;
@@ -234,30 +231,30 @@ export const XoX = () => {
       ...highScores,
       { name: player1, score: player1Symbol == 'x'? finalScores.x : finalScores.o, boardSize:boardSize },
       { name: player2, score: player2Symbol == 'x'? finalScores.x : finalScores.o, boardSize:boardSize }
-    ].sort((a, b) => b.score - a.score); // Sort by score descending
-    setHighScores(newHighScores.slice(0, 5)); // Keep top 5
+    ].sort((a, b) => b.score - a.score); 
+    setHighScores(newHighScores.slice(0, 5)); 
   };  
 
   const reset = () => {
     setLock(false);
     setData(Array(boardSize * boardSize).fill(''));
-    setScores({ x: 0, o: 0 }); // Reset scores
+    setScores({ x: 0, o: 0 }); 
     titleRef.current.innerHTML = 'XoX Game In <span>React</span>';
     document.querySelectorAll('.boxes').forEach(box => {
       box.innerHTML = '';
     });
-    setCount(0); // Reset turn counter
+    setCount(0); 
   };
 
   const newGame = () => {
     setLock(false);
     setData(Array(boardSize * boardSize).fill(''));
-    setScores({ x: 0, o: 0 }); // Reset scores
+    setScores({ x: 0, o: 0 }); 
     titleRef.current.innerHTML = 'XoX Game In <span>React</span>';
     document.querySelectorAll('.boxes').forEach(box => {
       box.innerHTML = '';
     });
-    setCount(0); // Reset turn counter
+    setCount(0);
     setIsGameStarted(false);
   };
 
@@ -268,7 +265,7 @@ export const XoX = () => {
     document.querySelectorAll('.boxes').forEach(box => {
       box.innerHTML = '';
     });
-    setCount(0); // Reset turn counter
+    setCount(0); 
     setIsGameStarted(false);
   };
 
@@ -326,7 +323,7 @@ export const XoX = () => {
           </div>
           </div>
           <div>
-            <label>Matris boyutunu girin (3, 4, 5, ...): </label>
+            <label>Enter matrix size (3, 4, 5, ...): </label>
             <input
               type="number"
               min="3"
