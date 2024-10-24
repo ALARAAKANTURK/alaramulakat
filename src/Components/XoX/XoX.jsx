@@ -58,80 +58,182 @@ export const XoX = () => {
     if (newData.every(cell => cell !== '')) {
       setLock(true);
       calculateScores(newData);
-      titleRef.current.innerHTML = 'Game Over!';
-      endGame();
+          
+      const finalScores = { x: scores.x, o: scores.o }; 
+      updateHighScores(finalScores);
+      
+      endGame();      
+      
     }
-    
-    calculateScores(newData);
+    else{
+      calculateScores(newData);
+    }
   };
-
   const calculateScores = (data) => {
     let pointsX = 0;
     let pointsO = 0;
-
-    // Check rows, columns, and diagonals for scoring
+    let lastpointsX = 0;
+    let lastpointsO = 0;
+  
+    // Check rows and columns for scoring
     for (let i = 0; i < boardSize; i++) {
       // Check Rows
-      pointsX += checkLineScore(data.slice(i * boardSize, (i + 1) * boardSize), 'x');
-      pointsO += checkLineScore(data.slice(i * boardSize, (i + 1) * boardSize), 'o');
-      
+      lastpointsX = checkLineScore(data.slice(i * boardSize, (i + 1) * boardSize), 'x');
+      lastpointsO = checkLineScore(data.slice(i * boardSize, (i + 1) * boardSize), 'o');
+      if(lastpointsX> pointsX){
+        pointsX = lastpointsX;
+      }
+      if(lastpointsO> pointsO){
+        pointsO = lastpointsO;
+      }
       // Check Columns
       const column = data.filter((_, index) => index % boardSize === i);
-      pointsX += checkLineScore(column, 'x');
-      pointsO += checkLineScore(column, 'o');
+      lastpointsX = checkLineScore(column, 'x');
+      lastpointsO = checkLineScore(column, 'o');
+
+      if(lastpointsX> pointsX){
+        pointsX = lastpointsX;
+      }
+      if(lastpointsO> pointsO){
+        pointsO = lastpointsO;
+      }
     }
-
-    // Check Diagonal
-    const mainDiagonal = data.filter((_, index) => index % (boardSize + 1) === 0);
-    pointsX += checkLineScore(mainDiagonal, 'x');
-    pointsO += checkLineScore(mainDiagonal, 'o');
-
-    // Check Anti-Diagonal
-    const antiDiagonal = data.filter((_, index) => index % (boardSize - 1) === 0 && index > 0 && index < (boardSize * boardSize - 1));
-    pointsX += checkLineScore(antiDiagonal, 'x');
-    pointsO += checkLineScore(antiDiagonal, 'o');
+  
+    // Check all diagonals
+    lastpointsX = checkAllDiagonals(data, 'x');
+    lastpointsO = checkAllDiagonals(data, 'o');
+  
+    if(lastpointsX> pointsX){
+      pointsX = lastpointsX;
+    }
+    if(lastpointsO> pointsO){
+      pointsO = lastpointsO;
+    }
 
     // Update scores
     const finalScores = { x: pointsX, o: pointsO };
     setScores(prevScores => ({
-      x: prevScores.x + pointsX,
-      o: prevScores.o + pointsO
+      x: pointsX,
+      o: pointsO
     }));
-
-    // Display final scores
-    const winner = pointsX > pointsO ? player1 : pointsO > pointsX ? player2 : "Berabere";
-    titleRef.current.innerHTML = `Game Over! Final Scores - X: ${pointsX}, O: ${pointsO} Winner:${winner}`;
-    updateHighScores(finalScores);
+  
   };
-
-  const checkLineScore = (line, player) => {
-    let count = 0;
+  
+  // Function to calculate points from all possible diagonals
+  const checkAllDiagonals = (data, player) => {
     let totalPoints = 0;
-
-    for (const cell of line) {
-      if (cell === player) {
-        count++;
-      } else {
-        if (count > 0) {
-          totalPoints += count * count; // Square of the count
-        }
-        count = 0; // Reset count
+    let lastPoints = 0;
+  
+    for (let startRow = 0; startRow < boardSize; startRow++) {
+      let diagonal = [];
+      let row = startRow;
+      let col = 0;
+      while (row < boardSize && col < boardSize) {
+        diagonal.push(data[boardSize*row+col]);
+        row++;
+        col++;
+      }
+      lastPoints = checkLineScore(diagonal, player);
+      if(lastPoints>totalPoints)
+      {
+        totalPoints = lastPoints;
+      }
+    }
+    
+    for (let startCol = 1; startCol < boardSize; startCol++) {
+      let diagonal = [];
+      let row = 0;
+      let col = startCol;
+      while (row < boardSize && col < boardSize) {
+        diagonal.push(data[boardSize*row+col]);
+        row++;
+        col++;
+      }
+      
+      lastPoints = checkLineScore(diagonal, player);
+      if(lastPoints>totalPoints)
+      {
+        totalPoints = lastPoints;
       }
     }
 
-    // Check for a remaining count at the end of the line
-    if (count > 0) {
-      totalPoints += count * count;
+    for (let startRow = 0; startRow < boardSize; startRow++) {
+      let diagonal = [];
+      let row = startRow;
+      let col = boardSize - 1;
+      while (row < boardSize && col >= 0) {
+        diagonal.push(data[boardSize*row+col]);
+        row++;
+        col--;
+      }
+      lastPoints = checkLineScore(diagonal, player);
+      if(lastPoints>totalPoints)
+      {
+        totalPoints = lastPoints;
+      }
+      
     }
-
+    
+    for (let startCol = boardSize - 2; startCol >= 0; startCol--) {
+      let diagonal = [];
+      let row = 0;
+      let col = startCol;
+      while (row < boardSize && col >= 0) {
+        diagonal.push(data[boardSize*row+col]);
+        row++;
+        col--;
+      }
+      lastPoints = checkLineScore(diagonal, player);
+      if(lastPoints>totalPoints)
+      {
+        totalPoints = lastPoints;
+      }
+    }
+  
+  
     return totalPoints;
   };
+  
+  // Check line score for a player, and calculate points based on consecutive symbols
+  const checkLineScore = (line, player) => {
+    let count = 0;
+    let totalPoints = 0;
+    let lastPoints = 0;
+  
+    for (const cell of line) {
+      if (cell === player) {
+        count++; 
+      } 
+      else {
+        if (count > 0) 
+        {
+          lastPoints = count * count; 
+          if(lastPoints> totalPoints)
+          {
+            totalPoints = lastPoints;
+          }
+        }
+        count = 0; 
+      }
+    }
+  
+    if (count > 0) {
+      lastPoints = count * count; 
+      if(lastPoints> totalPoints)
+      {
+        totalPoints = lastPoints;
+      }
+    }
+  
+    return totalPoints;
+  };
+  
 
   const updateHighScores = (finalScores) => {
     const newHighScores = [
       ...highScores,
-      { name: player1, score: finalScores.x },
-      { name: player2, score: finalScores.o }
+      { name: player1, score: player1Symbol == 'x'? finalScores.x : finalScores.o, boardSize:boardSize },
+      { name: player2, score: player2Symbol == 'x'? finalScores.x : finalScores.o, boardSize:boardSize }
     ].sort((a, b) => b.score - a.score); // Sort by score descending
     setHighScores(newHighScores.slice(0, 5)); // Keep top 5
   };  
@@ -163,7 +265,6 @@ export const XoX = () => {
     setLock(false);
     setData(Array(boardSize * boardSize).fill(''));
     
-    titleRef.current.innerHTML = 'XoX Game In <span>React</span>';
     document.querySelectorAll('.boxes').forEach(box => {
       box.innerHTML = '';
     });
@@ -193,7 +294,7 @@ export const XoX = () => {
           />
           </div>
           <div>
-          <label>Oyuncu 1 için simge seçimi: </label>
+          <label>Select symbol for player 1: </label>
           <select
             value={player1Symbol}
             onChange={(e) => {
@@ -209,7 +310,7 @@ export const XoX = () => {
           <p>Player 1: {player1Symbol}</p>
           <p>Player 2: {player2Symbol}</p>
           <div className="scores">
-            <h2>Score Board</h2>
+            <h2>Last Game Result</h2>
             <p>{player1} ({player1Symbol}): {player1Symbol == 'x'? scores.x : scores.o}</p>
             <p>{player2} ({player2Symbol}): {player2Symbol == 'x'? scores.x : scores.o}</p>
           </div>
@@ -218,7 +319,7 @@ export const XoX = () => {
             <ul className="list-group" style={{paddingLeft:20}}>
               {highScores.map((player, index) => (
                 <li key={index} className="list-group-item">
-                  {player.name}: {player.score}
+                  {player.name}: {player.score} | {player.boardSize}x{player.boardSize}
                 </li>
               ))}
             </ul>
@@ -242,7 +343,7 @@ export const XoX = () => {
             />
           </div>
 
-          <button class="start" onClick={handleStartGame}>Başlat</button>
+          <button className="start" onClick={handleStartGame}>Başlat</button>
         </div>
         
       ):
