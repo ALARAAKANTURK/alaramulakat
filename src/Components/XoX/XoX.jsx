@@ -340,7 +340,7 @@ export const XoX = () => {
             />
           </div>
 
-          <button className="start" onClick={handleStartGame}>Başlat</button>
+          <button className="start" onClick={handleStartGame}>Start the game</button>
         </div>
         
       ):
