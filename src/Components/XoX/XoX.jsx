@@ -19,7 +19,7 @@ export const XoX = () => {
 
   const handleStartGame = () => {
     if (!player1 || !player2) {
-      alert("Lütfen iki oyuncu adını da girin.");
+      alert("Please enter both player names.");
       return;
     }
     setIsGameStarted(true);
